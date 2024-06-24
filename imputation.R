@@ -1,32 +1,29 @@
 # mice
 
-install.packages("mice")
-install.packages("missForest")
-
 library(mice)
 library(magrittr)
 library(dplyr)
 library(missForest)
 
 
-Erhebung_numeric <- Erhebung %>% select(C, G, FL, SP, SC, SV, SN, FV, FN
-                                        )
+Erhebung_numeric <- Erhebung %>% select(A, S, L, G, FL, SP, SC, FV, FN, SV, SN, Fehler, Erstes, Dauer, Fortschritt, Seiten)
 
 
 
 md.pattern(Erhebung_numeric)
 
 mice_imputed <- data.frame(
-  original = Erhebung$SN,
-  #imputed_pmm = complete(mice(Erhebung_numeric, method = "pmm")),
+  original = Erhebung,
+  imputed_pmm = complete(mice(Erhebung_numeric, method = "pmm")),
   imputed_cart = complete(mice(Erhebung_numeric, method = "cart")),
   imputed_lasso = complete(mice(Erhebung_numeric, method = "lasso.norm"))
 )
+
 mice_imputed
 md.pattern(mice_imputed)
 
-neu2 <- as.data.frame(mice_imputed)
-writexl::write_xlsx(neu2, "asd.xlsx")
+neu <- as.data.frame(mice_imputed)
+writexl::write_xlsx(neu, "imputed.xlsx")
 
 
 Daten <- sapply(Erhebung_numeric, as.numeric)

@@ -6,22 +6,16 @@ library(cluster)
 library(knitr)
 
 
-swe2 <- as.data.frame  (subset(swe, select=c(G, L, N, FL, SP, SC, Fehler, Dauer, Seiten, Erstes, DS, DS2, DS3)))
+#kclust.klasse <- pmm
+mydata <- pmm
+mydata <- as.data.frame(subset(mydata, select=c(G, FL, SP, SC, FV, FN, SV, SN, Fehler, Erstes, Dauer, Seiten))) #Fortschritt NAs
 
-swe2 <- swe2[complete.cases(swe2),]
-
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Fortschritt, N, L, Fehler, Dauer, Seiten, FL, SP, SC, DS))) #bester HOpkins
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Erstes, Fehler, Dauer, Seiten, FL, SP, SC, DS))) #perfekte 3 CLuster
-
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Fehler, Dauer, Seiten, FL, SP, SC, DS)))
-PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Fehler, Dauer, Seiten)))
-PD.klasse <- as.data.frame  (subset(swe2, select=c(G,FL, SP, SC, DS)))
-PD.klasse<-round(PD.klasse,2)
 
 #Normalisierung
-z <- PD.klasse
+z <- mydata
 means <- apply(z,2,mean)
 sds <- apply(z,2,sd)
+
 nor <- scale(z,center=means,scale = sds)
 #Distanzmatrix
 distance = dist(nor)
@@ -36,7 +30,7 @@ get_clust_tendency(nor,n=nrow(nor)-1)
 # In the plot above, similar objects are close to one another. 
 # Red color corresponds to small distance and blue color indicates big distance between observation.
 
-#hopkins(PD.klasse)
+#hopkins(kclust)
 
 #optimal clusters
 nb <- NbClust(nor, distance = "euclidean", min.nc = 2, max.nc = 10, method = "kmeans", index = "all", alphaBeale = 0.1)
@@ -83,7 +77,7 @@ aggar.kmean <- aggregate(data.clust.kmean[,1:4], by=list(data.clust.kmean$cluste
 aggar.kmean%>%kable()
 set.seed(123)
 
-swe2$Cluster <- kmean$cluster
+mydata$Cluster <- kmean$cluster
 # Compute k-means with k = 3
 # visualising k-means result
 fviz_cluster(kmean, data = nor,

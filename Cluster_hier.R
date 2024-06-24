@@ -2,19 +2,13 @@ library(cluster)
 library(fpc)
 library(factoextra)
 
+mydata <- pmm
+mydata <- as.data.frame(subset(mydata, select=c(G, FL, SP, SC, FV, FN, SV, SN, Fehler, Erstes, Dauer, Seiten))) #Fortschritt NAs
 
-prozessdaten <- as.data.frame  (subset(swe, select=c(G, L, DS, Fehler, Dauer, Fortschritt, Seiten)))
-shuffle_index <- sample(1:nrow(PD.sub))
-prozessdaten <- prozessdaten[shuffle_index, ]
-PD.num <- prozessdaten[complete.cases(prozessdaten),]
-PD.num<-round(PD.num,2)
 
-fragebogen <- as.data.frame  (subset(swe, select=c(G, L, Fehler, Dauer, Fortschritt, Seiten, FL, SP, SC, DS)))
-
-fragebogen <- as.data.frame(subset(swe, select=c(G, L, FL, SP, SC, DS)))
-shuffle_index <- sample(1:nrow(fragebogen))
-fragebogen <- fragebogen[shuffle_index, ]
-PD.num <- fragebogen[complete.cases(fragebogen),]
+shuffle_index <- sample(1:nrow(mydata))
+mydata <- mydata[shuffle_index, ]
+PD.num <- mydata[complete.cases(mydata),]
 PD.num<-round(PD.num,2)
 
 
@@ -44,7 +38,7 @@ plot(hier,  cex = 0.5, hang = -1)
 rect.hclust(hier, k = 4, border = "red")
 #hierclus1 <- cutree(hier, k = 3)
 #plot(hierclus1)
-
+PD.hclust <- hier
 
 #cluster member
 member = cutree(PD.hclust,5)

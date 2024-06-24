@@ -1,5 +1,4 @@
 #
-install.packages(c("ggplot2", "ggpubr", "tidyverse", "broom", "AICcmodavg"))
 
 library(ggplot2)
 library(ggpubr)

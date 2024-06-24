@@ -1,30 +1,12 @@
-install.packages("cluster")
-install.packages("fpc")
-
-
 library(cluster)
 library(fpc)
 library(factoextra)
 
-swe2 <- as.data.frame  (subset(swe, select=c(G, N, L, FL, SP, SC, Fehler, Dauer, Fortschritt, Erstes, Seiten, DS)))
+mydata <- pmm
 
-swe2 <- swe2[complete.cases(swe2),]
+mydata <- as.data.frame(subset(mydata, select=c(G, FL, SP, SC, FV, FN, SV, SN, Fehler, Erstes, Dauer, Seiten))) #Fortschritt NAs
 
-
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Fortschritt, N, L, Fehler, Dauer, Seiten, FL, SP, SC, DS))) #bester HOpkins
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Erstes, Fehler, Dauer, Seiten, FL, SP, SC, DS))) #perfekte 3 CLuster
-
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G, Fehler, Dauer, Seiten, FL, SP, SC, DS)))
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G,Fehler, Dauer, Seiten)))
-#PD.klasse <- as.data.frame  (subset(swe2, select=c(G,FL, SP, SC, DS)))
-
-PD.num<-PD.klasse
-
-PD.num<-round(PD.num,2)
-df<- nor 
-
-
-df <- scale(PD.num)
+df <- scale(mydata)
 
 set.seed(1234)
 

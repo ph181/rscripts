@@ -4,27 +4,14 @@
 #Thus it is measured by the proportion of transaction with item X in which item Y also appears. Confidence might misrepresent the importance of association.
 #Lift says how likely item Y is purchased when item X is purchased while controlling for how popular item Y is.
 
-install.packages("arules")
-install.packages("arulesViz")
 
 library(arules)
 library(arulesViz)
 library(ggplot2)
 
-prozessdaten <- as.data.frame  (subset(Erhebung, select=c(V1, V2.)))
-shuffle_index <- sample(1:nrow(PD.sub))
-prozessdaten <- prozessdaten[shuffle_index, ]
-PD.klasse <- prozessdaten[complete.cases(prozessdaten),]
-
-PD.num <- prozessdaten[complete.cases(prozessdaten),]
-PD.num<-round(PD.num,2)
-
-PD.numklas <- prozessdaten[complete.cases(prozessdaten),]
 
 
-PD.klasse$class <-as.factor(PD.num$V1)
-
-trans <- transactions(PD.klasse)
+trans <- transactions(mydata)
 
 as(trans,"transactions")
 summary(trans)

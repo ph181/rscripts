@@ -1,28 +1,23 @@
-
-fragebogen <- as.data.frame  (subset(swe, select=c(G, N, FL, SP, SC, DS)))
-shuffle_index <- sample(1:nrow(fragebogen))
-fragebogen <- fragebogen[shuffle_index, ]
-PD.num <- fragebogen[complete.cases(fragebogen),]
+library(class) 
 
 
-ran <- sample(1:nrow(PD.num), 0.7 * nrow(PD.num)) 
+
+ran <- sample(1:nrow(mydata), 0.7 * nrow(mydata)) 
 
 
 ##the normalization function is created
 nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
 
 ##Run nomalization on first 4 coulumns of dataset because they are the predictors
-PD.normklas <- as.data.frame(lapply(PD.num[,c(1,2,3,4,5)], nor))
+PD.normklas <- as.data.frame(lapply(mydata[,c(1,2,3,4,5)], nor))
 
 
 train <- PD.normklas[ran,] ##extract testing set
 test <- PD.normklas[-ran,]  ##extract 5th column of train dataset because it will be used as 'cl' argument in knn function.
-target_category <- PD.num[ran,6] ##extract 5th column if test dataset to measure the accuracy
-test_category <- PD.num[-ran,6]##load the package class
-library(class) 
+target_category <- mydata[ran,6] ##extract 5th column if test dataset to measure the accuracy
+test_category <- mydata[-ran,6]##load the package class
 ##run knn function
 pr <- knn(train,test,cl=target_category,k=13)
-
 
 ##create confusion matrix
 tab <- table(pr,test_category)
@@ -44,7 +39,7 @@ accuracy(tab)
 # and we are asked to predict the category of those 50 values, we can do that with this model.
 
 ##store it as data frame
-dia <- data.frame(PD.num)
+dia <- data.frame(mydata)
 
 ##create a random number equal 90% of total number of rows
 ran <- sample(1:nrow(dia),0.9 * nrow(dia))
@@ -61,16 +56,15 @@ dia_train <- dia_nor[ran,]
 ##test dataset extracted
 dia_test <- dia_nor[-ran,]##the 2nd column of training dataset because that is what we need to predict about testing dataset
 ##also convert ordered factor to normal factor
-dia_target <- as.factor(PD.num[ran,6])
+dia_target <- as.factor(mydata[ran,6])
 
 ##the actual values of 2nd couln of testing dataset to compaire it with values that will be predicted
 ##also convert ordered factor to normal factor
-test_target <- as.factor(PD.num[-ran,6])
+test_target <- as.factor(mydata[-ran,6])
 
 
 
 ##run knn function
-library(class)
 pr <- knn(dia_train,dia_test,cl=dia_target,k=20)
 
 ##create the confucion matrix
@@ -84,16 +78,16 @@ accuracy(tb)## [1] 71.09752
 
 
 ########################
-default_index = sample(nrow(PD.num), 100)
-default_train = PD.num[default_index, ]
-default_test = PD.num[-default_index, ]
+default_index = sample(nrow(mydata), 100)
+default_train = mydata[default_index, ]
+default_test = mydata[-default_index, ]
 # training data
 X_default_train = default_train[, -1]
-y_default_train = default_train$DSc
+y_default_train = default_train$kategorie
 
 # testing data
 X_default_test = default_test[, -1]
-y_default_test = default_test$DSc
+y_default_test = default_test$kategorie
 
 head(knn(train = X_default_train, 
          test = X_default_test, 

@@ -5,18 +5,11 @@ library(RColorBrewer)
 library(caTools)
 library(C50)
 library(RWeka)
-
-install.packages("RWeka")
+library(caret)
 
 ###############################
-swe <- as.data.frame  (subset(Erhebung, select=c(C, G, SP, SC, SV, DFW)))
-shuffle_index <- sample(1:nrow(swe))
-swe <- swe[shuffle_index, ]
-swe <- swe[complete.cases(swe),]
-#swe$FL3<-as.factor(swe$FL3) 
-swe$DFW<-as.factor(swe$DFW) 
-swe[1:5]<-round(swe[1:5],1)
 
+mydata$kategorie<-as.factor(mydata$kategorie) 
 
 set.seed(1211)
 
@@ -26,18 +19,18 @@ set.seed(1211)
 #train  <- PD.klasse[sample, ]
 #test   <- PD.klasse[!sample, ]
 
-split <- sample.split(swe, SplitRatio = 0.7)
-train <- subset(swe, split == "TRUE")
-test <- subset(swe, split == "FALSE")
+split <- sample.split(mydata, SplitRatio = 0.7)
+train <- subset(mydata, split == "TRUE")
+test <- subset(mydata, split == "FALSE")
 
-prop.table(table(train$DFW))
-prop.table(table(test$DFW))
+prop.table(table(train$kategorie))
+prop.table(table(test$kategorie))
 
 
   ###############
 #C4.5 The C4.5 algorithm is an extension of the ID3 algorithm and constructs a decision tree to maximize information gain (difference in entropy).
 
-fit <- J48(DFW~., data=train, 
+fit <- J48(kategorie~., data=train, 
            #control = Weka_control(R = TRUE)
            )
 
@@ -49,8 +42,8 @@ predictions <- predict(fit, test)
 # summarize accuracy
 if(require("partykit", quietly = TRUE)) plot(fit)
 summary(predictions)
-table_mat <- table(predictions, test$DFW)
-table_mat <- table(test$DFW, predictions)
+table_mat <- table(predictions, test$kategorie)
+table_mat <- table(test$kategorie, predictions)
 
 summary(table_mat)
 table_mat
@@ -69,20 +62,20 @@ eval_j48
 #It was proprietary for a long time, although the code was released recently and is available in the C50 package.
 set.seed(1211)
 
-split <- sample.split(swe, SplitRatio = 0.7)
-train <- subset(swe, split == "TRUE")
-test <- subset(swe, split == "FALSE")
-prop.table(table(train$DFW))
-prop.table(table(test$DFW))
+split <- sample.split(mydata, SplitRatio = 0.7)
+train <- subset(mydata, split == "TRUE")
+test <- subset(mydata, split == "FALSE")
+prop.table(table(train$kategorie))
+prop.table(table(test$kategorie))
 
-fit <- C5.0(DFW~., data=train)
+fit <- C5.0(kategorie~., data=train)
 # summarize the fit
 summary(fit)
 print(fit)
 # make predictions
 predictions <- predict.C5.0(fit, test, type="class")
 # summarize accuracy
-table_mat <- table(predictions, test$FLW)
+table_mat <- table(predictions, test$kategorie)
 table_mat
 accuracy_Test <- sum(diag(table_mat)) / sum(table_mat)
 print(paste('Accuracy for test', accuracy_Test))
@@ -91,7 +84,7 @@ if(require("partykit", quietly = TRUE)) plot(fit)
 summary(predictions)
 
 
-rules <- C5.0(swe[,-7], swe[,7], rules = TRUE)
+rules <- C5.0(mydata[,-7], mydata[,7], rules = TRUE)
 summary(rules) # view the ruleset  
 
 
@@ -100,24 +93,23 @@ summary(rules) # view the ruleset
 
 # PART PART is a rule system that creates pruned C4.5 decision trees for the data set and extracts rules and those instances that are covered by 
 #the rules are removed from the training data. The process is repeated until all instances are covered by extracted rules.
-fit <- PART(DFW~., data=train)
+fit <- PART(kategorie~., data=train)
 # summarize the fit
 summary(fit)
 
 # make predictions
 predictions <- predict(fit, test)
 # summarize accuracy
-table_mat <- table(predictions, test$DFW)
+table_mat <- table(predictions, test$kategorie)
 table_mat
 accuracy_Test <- sum(diag(table_mat)) / sum(table_mat)
 print(paste('Accuracy for test', accuracy_Test))
 
 
 ############
-library(caret)
 set.seed(1958)  # set a seed to get replicable results
-trains <- createFolds(swe$DFW, k=10)
-C45Fit <- train(DFW ~., method="J48", data=swe,
+trains <- createFolds(mydata$kategorie, k=10)
+C45Fit <- train(kategorie ~., method="J48", data=mydata,
                 tuneLength = 5,
                 trControl = trainControl(
                   method="cv", indexOut=trains))
